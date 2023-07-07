@@ -29,17 +29,8 @@ semgrep-sast:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'     
 
-validate-frontend:
-  stage: CI
-  image: mcr.microsoft.com/devcontainers/typescript-node:latest
-  script:
-    - cd app/frontend
-    - npm install
-    - npm run build
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'
 
-validate-backend: 
+validate-app: 
   stage: CI
   image: python:latest
   script:
@@ -50,3 +41,4 @@ validate-backend:
     - azd package -e test --no-prompt
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'
+

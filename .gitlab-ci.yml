@@ -43,9 +43,9 @@ validate-backend:
   stage: CI
   image: python:latest
   script:
-    - apt update
-    - apt install nodejs 
-    - apt install npm 
+    - apt update -y
+    - apt install nodejs -y 
+    - apt install npm -y
     - curl -fsSL https://aka.ms/install-azd.sh | bash
     - azd package -e test --no-prompt
   rules:

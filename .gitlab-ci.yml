@@ -44,6 +44,6 @@ validate-backend:
   image: python:latest
   script:
     - curl -fsSL https://aka.ms/install-azd.sh | bash
-    - azd package 
+    - azd package -e test --no-prompt
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'

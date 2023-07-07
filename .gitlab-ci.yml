@@ -18,11 +18,15 @@ secret_detection:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'
 
-sast: 
+nodejs-scan-sast: 
   stage: CI
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'
-      
+
+semgrep-sast:
+  stage: CI
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'      
 
 validate-frontend:
   stage: CI

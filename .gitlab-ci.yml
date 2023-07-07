@@ -27,7 +27,7 @@ nodejs-scan-sast:
 semgrep-sast:
   stage: CI
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'      
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'     
 
 validate-frontend:
   stage: CI
@@ -39,3 +39,12 @@ validate-frontend:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'
 
+validate-backend: 
+  stage: CI
+  image: python:latest
+  script:
+    - cd app/backend
+    - pip install -r requirements.txt
+    - python3 app.py
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'

@@ -12,13 +12,16 @@ include:
 stages:
   - CI
   - CD
+
 secret_detection:
   stage: CI
+
 sast: 
   stage: CI
+
 validate-frontend:
   stage: CI
-  image: node:latest
+  image: mcr.microsoft.com/devcontainers/typescript-node:latest
   script:
     - cd app/frontend
     - npm run build

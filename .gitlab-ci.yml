@@ -41,7 +41,7 @@ validate-frontend:
 
 validate-backend: 
   stage: CI
-  image: python:latest
+  image: mcr.microsoft.com/vscode/devcontainers/base:0-bullseye
   script:
     - curl -fsSL https://aka.ms/install-azd.sh | bash
     - azd package -e test --no-prompt

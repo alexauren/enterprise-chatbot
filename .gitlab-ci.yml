@@ -24,6 +24,7 @@ validate-frontend:
   image: mcr.microsoft.com/devcontainers/typescript-node:latest
   script:
     - cd app/frontend
+    - npm install
     - npm run build
   
   only:

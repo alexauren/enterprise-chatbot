@@ -12,6 +12,7 @@ include:
 stages:
   - CI
   - CD
+  - test
 
 secret_detection:
   stage: CI

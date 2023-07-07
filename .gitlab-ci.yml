@@ -9,3 +9,6 @@ include:
   - template: Security/SAST.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
 
+sast:
+  variables:
+    NODE_PATH: /app/frontend

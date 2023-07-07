@@ -13,6 +13,8 @@ stages:
   - CI
   - CD
 
+sast: 
+  stage: CI
 validate-frontend:
   stage: CI
   image: node:latest

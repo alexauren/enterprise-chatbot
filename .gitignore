@@ -55,6 +55,9 @@ coverage.xml
 .pytest_cache/
 cover/
 
+package-lock.json
+package.json
+app/backend/pyenv
 # Translations
 *.mo
 *.pot

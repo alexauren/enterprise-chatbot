@@ -43,8 +43,7 @@ validate-backend:
   stage: CI
   image: python:latest
   script:
-    - cd app/backend
-    - pip install -r requirements.txt
-    - python3 app.py
+    - curl -fsSL https://aka.ms/install-azd.sh | bash
+    - azd package 
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'

@@ -41,9 +41,10 @@ validate-frontend:
 
 validate-backend: 
   stage: CI
-  image: mcr.microsoft.com/vscode/devcontainers/base:0-bullseye
+  image: python:latest
   script:
     - apt install nodejs 
+    - apt install npm 
     - curl -fsSL https://aka.ms/install-azd.sh | bash
     - azd package -e test --no-prompt
   rules:

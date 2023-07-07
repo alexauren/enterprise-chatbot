@@ -12,7 +12,7 @@ import Chat from "./pages/chat/Chat";
 
 initializeIcons();
 
-export default function App() {
+xport default function App() {
     return (
         <HashRouter>
             <Routes>

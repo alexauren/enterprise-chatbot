@@ -15,9 +15,15 @@ stages:
 
 secret_detection:
   stage: CI
+  only:
+    - merge_requests
+    - main
 
 sast: 
   stage: CI
+  only:
+    - merge_requests
+    - main
 
 validate-frontend:
   stage: CI
@@ -26,7 +32,6 @@ validate-frontend:
     - cd app/frontend
     - npm install
     - npm run build
-  
   only:
     - merge_requests
     - main

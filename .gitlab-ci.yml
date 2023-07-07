@@ -9,6 +9,17 @@ include:
   - template: Security/SAST.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
 
-sast:
-  variables:
-    NODE_PATH: /app/frontend
+stages:
+  - CI
+  - CD
+
+validate-frontend:
+  stage: CI
+  image: node:latest
+  script:
+    - cd app/frontend
+    - npm run build
+  
+  only:
+    - merge_requests
+    - main

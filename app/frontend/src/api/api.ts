@@ -6,7 +6,7 @@ export async function askApi(options: AskRequest): Promise<AskResponse> {
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({
+        body: SON.stringify({
             question: options.question,
             approach: options.approach,
             overrides: {

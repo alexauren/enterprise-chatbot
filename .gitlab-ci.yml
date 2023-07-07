@@ -12,7 +12,8 @@ include:
 stages:
   - CI
   - CD
-
+secret_detection:
+  stage: CI
 sast: 
   stage: CI
 validate-frontend:

@@ -29,16 +29,16 @@ semgrep-sast:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'     
 
-#----Before running CD we need token to authenticate----#
-# validate-app: 
-#   stage: CI
-#   image: python:latest
-#   script:
-#     - apt update -y
-#     - apt install nodejs -y 
-#     - apt install npm -y
-#     - curl -fsSL https://aka.ms/install-azd.sh | bash
-#     - azd package -e test --no-prompt
-#   rules:
-#     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'
+
+validate-app: 
+  stage: CI
+  image: python:latest
+  script:
+    - apt update -y
+    - apt install nodejs -y 
+    - apt install npm -y
+    - curl -fsSL https://aka.ms/install-azd.sh | bash
+    - azd package -e test --no-prompt
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'
 

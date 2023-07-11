@@ -39,7 +39,7 @@ param formRecognizerSkuName string = 'S0'
 
 param gptDeploymentName string // Set in main.parameters.json
 param gptDeploymentCapacity int = 30
-param gptModelName string = 'text-davinci-003'
+param gptModelName string = 'gpt-35-turbo'
 param chatGptDeploymentName string // Set in main.parameters.json
 param chatGptDeploymentCapacity int = 30
 param chatGptModelName string = 'gpt-35-turbo'
@@ -115,58 +115,58 @@ module backend 'core/host/appservice.bicep' = {
   }
 }
 
-// module openAi 'core/ai/cognitiveservices.bicep' = {
-//   name: 'openai'
-//   scope: openAiResourceGroup
-//   params: {
-//     name: !empty(openAiServiceName) ? openAiServiceName : '${abbrs.cognitiveServicesAccounts}${resourceToken}'
-//     location: openAiResourceGroupLocation
-//     tags: tags
-//     sku: {
-//       name: openAiSkuName
-//     }
-//     deployments: [
-//       {
-//         name: gptDeploymentName
-//         model: {
-//           format: 'OpenAI'
-//           name: gptModelName
-//           version: '1'
-//         }
-//         sku: {
-//           name: 'Standard'
-//           capacity: gptDeploymentCapacity
-//         }
-//       }
-//       {
-//         name: chatGptDeploymentName
-//         model: {
-//           format: 'OpenAI'
-//           name: chatGptModelName
-//           version: '0301'
-//         }
-//         sku: {
-//           name: 'Standard'
-//           capacity: chatGptDeploymentCapacity
-//         }
-//       }
-//     ]
-//   }
-// }
+module openAi 'core/ai/cognitiveservices.bicep' = {
+  name: 'openai'
+  scope: openAiResourceGroup
+  params: {
+    name: !empty(openAiServiceName) ? openAiServiceName : '${abbrs.cognitiveServicesAccounts}${resourceToken}'
+    location: openAiResourceGroupLocation
+    tags: tags
+    sku: {
+      name: openAiSkuName
+    }
+    deployments: [
+      {
+        name: gptDeploymentName
+        model: {
+          format: 'OpenAI'
+          name: gptModelName
+          version: '0301'
+        }
+        sku: {
+          name: 'Standard'
+          capacity: gptDeploymentCapacity
+        }
+      }
+      {
+        name: chatGptDeploymentName
+        model: {
+          format: 'OpenAI'
+          name: chatGptModelName
+          version: '0301'
+        }
+        sku: {
+          name: 'Standard'
+          capacity: chatGptDeploymentCapacity
+        }
+      }
+    ]
+  }
+}
 
-// module formRecognizer 'core/ai/cognitiveservices.bicep' = {
-//   name: 'formrecognizer'
-//   scope: formRecognizerResourceGroup
-//   params: {
-//     name: !empty(formRecognizerServiceName) ? formRecognizerServiceName : '${abbrs.cognitiveServicesFormRecognizer}${resourceToken}'
-//     kind: 'FormRecognizer'
-//     location: formRecognizerResourceGroupLocation
-//     tags: tags
-//     sku: {
-//       name: formRecognizerSkuName
-//     }
-//   }
-// }
+module formRecognizer 'core/ai/cognitiveservices.bicep' = {
+  name: 'formrecognizer'
+  scope: formRecognizerResourceGroup
+  params: {
+    name: !empty(formRecognizerServiceName) ? formRecognizerServiceName : '${abbrs.cognitiveServicesFormRecognizer}${resourceToken}'
+    kind: 'FormRecognizer'
+    location: formRecognizerResourceGroupLocation
+    tags: tags
+    sku: {
+      name: formRecognizerSkuName
+    }
+  }
+}
 
 module searchService 'core/search/search-services.bicep' = {
   name: 'search-service'

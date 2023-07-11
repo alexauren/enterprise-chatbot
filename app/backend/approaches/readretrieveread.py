@@ -24,7 +24,7 @@ class ReadRetrieveReadApproach(Approach):
     """
 
     template_prefix = \
-"You are an intellivent assistant helping DNB Bank AS customers with their questions about insurance." \
+"You are an intelligent assistant helping DNB Bank AS customers with their questions about insurance." \
 "For tabular information return it as an html table. Do not return markdown format. " \
 "Each source has a name followed by colon and the actual data, quote the source name for each piece of data you use in the response. " \
 "For example, if the question is \"What color is the sky?\" and one of the information sources says \"info123: the sky is blue whenever it's not cloudy\", then answer with \"The sky is blue [info123]\" " \

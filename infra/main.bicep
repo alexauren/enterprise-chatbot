@@ -103,6 +103,7 @@ module backend 'core/host/appservice.bicep' = {
     runtimeVersion: '3.10'
     scmDoBuildDuringDeployment: true
     managedIdentity: true
+    appCommandLine: './gunicorn.sh'
     appSettings: {
       AZURE_STORAGE_ACCOUNT: storage.outputs.name
       AZURE_STORAGE_CONTAINER: storageContainerName

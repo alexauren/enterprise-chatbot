@@ -1,0 +1,52 @@
+.about-us-page {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .navbar {
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    align-items: flex-start;
+    background-color: #D2F0E9;
+    padding: 20px;
+  }
+  
+  .tab {
+    cursor: pointer;
+    padding: 10px;
+    margin-bottom: 10px;
+    color: #007272;
+  }
+  
+  .tab.active {
+    
+    color: white;
+  }
+  
+  .content {
+    margin-left: 30px;
+    margin-right: 30px;
+    line-height: 1.7 ;
+    flex: 1; /* Allow the content div to grow and fill remaining space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .title{
+    display: flex;;
+    position: absolute;
+    top: 50px;
+    color:#007272;
+  }
+  
+  h2 {
+    font-size: 35px;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    font-size: 16px;
+  }
+  

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './about.module.css'; // Import the CSS module for styling
+import styles from './About.module.css'; // Import the CSS module for styling
 
 // Define the tabs and their corresponding content
 interface Tab {

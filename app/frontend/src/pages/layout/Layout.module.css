@@ -5,7 +5,7 @@
 }
 
 .header {
-    background-color: #222222;
+    background-color: #007272;
     color: #f2f2f2;
 }
 
@@ -67,12 +67,15 @@
     font-weight: normal;
     margin-left: 40px;
 }
+.headerRightLogo {
+    height: 30px;
+}
 
 .microsoftLogo {
     height: 23px;
     font-weight: 600;
 }
 
-.githubLogo {
+.gitLabLogo {
     height: 20px;
 }

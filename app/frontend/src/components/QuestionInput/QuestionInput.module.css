@@ -20,8 +20,10 @@
 
 .questionInputSendButton {
     cursor: pointer;
+    color: #fdbb31;
 }
 
 .questionInputSendButtonDisabled {
     opacity: 0.4;
+    color: #fdbb31;
 }

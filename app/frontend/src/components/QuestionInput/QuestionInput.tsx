@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Stack, TextField } from "@fluentui/react";
 import { Send28Filled } from "@fluentui/react-icons";
+import "@dnb/eufemia/style";
+import { Button } from "@dnb/eufemia";
 
 import styles from "./QuestionInput.module.css";
 
@@ -41,8 +43,6 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend }: Pr
         }
     };
 
-    const sendQuestionDisabled = disabled || !question.trim();
-
     return (
         <Stack horizontal className={styles.questionInputContainer}>
             <TextField
@@ -55,15 +55,10 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend }: Pr
                 onChange={onQuestionChange}
                 onKeyDown={onEnterPress}
             />
-            <div className={styles.questionInputButtonsContainer}>
-                <div
-                    className={`${styles.questionInputSendButton} ${sendQuestionDisabled ? styles.questionInputSendButtonDisabled : ""}`}
-                    aria-label="Ask question button"
-                    onClick={sendQuestion}
-                >
-                    <Send28Filled primaryFill="rgba(115, 118, 225, 1)" />
-                </div>
-            </div>
+
+            <Button onClick={sendQuestion} style={{ color: "White", height: "50px", marginTop: "5px" }}>
+                Send
+            </Button>
         </Stack>
     );
 };

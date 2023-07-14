@@ -47,4 +47,6 @@ lint:
   image: node:14-alpine
   script:
     - pwd
-    - npx prettier --check /builds/dnb/platypus/tmt/app/frontend
+    - npx prettier --write /builds/dnb/platypus/tmt/app/frontend
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'

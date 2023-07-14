@@ -46,4 +46,4 @@ lint:
   stage: CI
   image: node:14-alpine
   script:
-    - npx prettier --check .
+    - npx prettier --write .

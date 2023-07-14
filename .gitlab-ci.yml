@@ -46,4 +46,5 @@ lint:
   stage: CI
   image: node:14-alpine
   script:
+    - pwd
     - npx prettier --check tmt\app\frontend\

@@ -84,8 +84,8 @@ Search query:
             stream=True)
 
         q = ''
-        for chunk in completion:
-            print(chunk.choices[0].text)
+        for i, chunk in enumerate(completion):
+            print(f"Query chunk {i}: {chunk.choices[0].text}")
             q += chunk.choices[0].text
 
         print(f"Finished step 1 in {time.time() - step_time} seconds")
@@ -139,13 +139,13 @@ Search query:
             stream=True)
 
         answer = ''
-        for chunk in completion:
-            print(answer.choices[0].text)
+        for i, chunk in enumerate(completion):
+            print(f"Answer chunk {i}: {chunk.choices[0].text}")
             answer += chunk.choices[0].text
 
         print(f"Finished step 3 in {time.time() - step_time} seconds")
 
-        print(f"Answering process completed in {time.time() - start_time}  seconds")
+        print(f"Answering process completed in {time.time() - start_time} seconds")
 
         return {"data_points": results, "answer": answer, "thoughts": f"Searched for:<br>{q}<br><br>Prompt:<br>" + prompt.replace('\n', '<br>')}
     

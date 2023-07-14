@@ -47,4 +47,4 @@ lint:
   image: node:14-alpine
   script:
     - pwd
-    - npx prettier --check tmt\app\frontend\
+    - npx prettier --check /builds/dnb/platypus/tmt/app/frontend

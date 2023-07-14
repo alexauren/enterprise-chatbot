@@ -23,9 +23,6 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend }: Pr
 
         onSend(question);
 
-        if (clearOnSend) {
-            setQuestion("");
-        }
         setQuestion("");
     };
 

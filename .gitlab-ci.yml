@@ -78,4 +78,4 @@ deploy:
     - azd env new cicd -l westeurope --subscription 564df8bf-50ab-4917-8082-b363158428c2
     - azd up -e cicd --no-prompt  
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'web' || $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'main' && $CI_PIPELINE_SOURCE == 'push'

@@ -60,7 +60,7 @@ validate-infra:
     - source infra/platypus-dev.env
     - echo $AZURE_DEPLOY_CLIENT_ID, $AZURE_DEPLOY_CLIENT_SECRET, $DNB_AZURE_TENANT_ID
     - az login --service-principal -u $AZURE_DEPLOY_CLIENT_ID -p $AZURE_DEPLOY_CLIENT_SECRET --tenant $DNB_AZURE_TENANT_ID
-    - az deployment sub what-if --location West-Europe --template-file infra/main.bicep --parameters @infra/main.parameters.json
+    - az deployment sub what-if --location westeurope --template-file infra/main.bicep --parameters @infra/main.parameters.json
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main' 
 

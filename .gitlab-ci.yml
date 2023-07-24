@@ -50,3 +50,14 @@ lint:
     - npx prettier --write /builds/dnb/platypus/tmt/app/frontend
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main'
+validate-infra: 
+  stage: CI
+  image: 364737385840.dkr.ecr.eu-west-1.amazonaws.com/tools-azure-cli-python:1.0
+  script: 
+    - az config set bicep.use_binary_from_path=false
+    - az bicep install
+    - source infra/platypus-dev.env
+    - az deployment sub create --location West-Europe --template-file infra/main.bicep --parameters @infra/main.parameters.json
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main' 
+

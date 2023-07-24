@@ -1,42 +1,56 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "environmentName": {
-      "value": "CICD"
-    },
-    "location": {
-      "value": "westeurope"
-    },
-    "principalId": {
-      "value": "28ffb7b0-7bee-4e01-8f46-fd5f9568d9c7"
-    },
-    "openAiServiceName": {
-      "value": "cog-platypus"
-    },
-    "openAiSkuName": {
-      "value": "S0"
-    },
-    "formRecognizerServiceName": {
-      "value": "cog-fr-platypus"
-    },
-    "formRecognizerSkuName": {
-      "value": "S0"
-    },
-    "searchServiceName": {
-      "value": "gptkb-platypus"
-    },
-    "searchServiceSkuName": {
-      "value": "standard"
-    },
-    "storageAccountName": {
-      "value": "stplatypus"
-    },
-    "chatGptDeploymentName": {
-      "value": "chat"
-    },
-    "gptDeploymentName": {  
-      "value": "gpt-35-turbo"
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "environmentName": {
+        "value": "${AZURE_ENV_NAME}"
+      },
+      "location": {
+        "value": "${AZURE_LOCATION}"
+      },
+      "principalId": {
+        "value": "${AZURE_PRINCIPAL_ID}"
+      },
+      "openAiServiceName": {
+        "value": "${AZURE_OPENAI_SERVICE}"
+      },
+      "openAiResourceGroupName": {
+        "value": "${AZURE_OPENAI_RESOURCE_GROUP}"
+      },
+      "openAiSkuName": {
+        "value": "S0"
+      },
+      "formRecognizerServiceName": {
+        "value": "${AZURE_FORMRECOGNIZER_SERVICE}"
+      },
+      "formRecognizerResourceGroupName": {
+        "value": "${AZURE_FORMRECOGNIZER_RESOURCE_GROUP}"
+      },
+      "formRecognizerSkuName": {
+        "value": "S0"
+      },
+      "searchServiceName": {
+        "value": "${AZURE_SEARCH_SERVICE}"
+      },
+      "searchServiceResourceGroupName": {
+        "value": "${AZURE_SEARCH_SERVICE_RESOURCE_GROUP}"
+      },
+      "searchServiceSkuName": {
+        "value": "standard"
+      },
+      "storageAccountName": {
+        "value": "${AZURE_STORAGE_ACCOUNT}"
+      },
+      "storageResourceGroupName": {
+        "value": "${AZURE_STORAGE_RESOURCE_GROUP}"
+      },
+      "chatGptDeploymentName": {
+        "value": "${AZURE_OPENAI_CHATGPT_DEPLOYMENT=chat}"
+      },
+      "gptDeploymentName": {
+        "value": "${AZURE_OPENAI_GPT_DEPLOYMENT=davinci}"
+      }
     }
   }
-}
+  
+  

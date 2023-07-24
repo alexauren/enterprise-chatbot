@@ -60,7 +60,22 @@ validate-infra:
     - source infra/platypus-dev.env
     - echo $AZURE_DEPLOY_CLIENT_ID, $AZURE_DEPLOY_CLIENT_SECRET, $DNB_AZURE_TENANT_ID
     - az login --service-principal -u $AZURE_DEPLOY_CLIENT_ID -p $AZURE_DEPLOY_CLIENT_SECRET --tenant $DNB_AZURE_TENANT_ID
-    - az deployment sub what-if --location westeurope --template-file infra/main.bicep --parameters @infra/main.parameters.json
+    - az deployment sub what-if --location westeurope --template-file infra/main.bicep --parameters @infra/cicd.parameters.json
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main' 
 
+deploy:
+  stage: CD
+  image: python:latest
+  script:
+    - apt update -y
+    - apt install nodejs -y 
+    - apt install npm -y
+    - curl -fsSL https://aka.ms/install-azd.sh | bash
+    - azd auth login --client-id $AZURE_DEPLOY_CLIENT_ID --tenant-id $DNB_AZURE_TENANT_ID --client-secret $AZURE_DEPLOY_CLIENT_SECRET
+    # - az login --service-principal -u $AZURE_DEPLOY_CLIENT_ID -p $AZURE_DEPLOY_CLIENT_SECRET --tenant $DNB_AZURE_TENANT_ID
+    - source infra/platypus-dev.env
+    - azd env new cicd -l westeurope --subscription 564df8bf-50ab-4917-8082-b363158428c2
+    - azd up -e cicd --no-prompt  
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main' && $CI_PIPELINE_SOURCE == 'push'

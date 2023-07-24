@@ -1,4 +1,3 @@
-from langchain.tools.base import BaseTool
 import openai
 import re
 from approaches.approach import Approach
@@ -11,8 +10,7 @@ from langchain.agents import Tool, AgentExecutor
 from langchain.agents.react.base import ReActDocstoreAgent
 from langchainadapters import HtmlCallbackHandler
 from text import nonewlines
-from typing import Any, List, Optional, Sequence
-
+from typing import Any, List, Optional
 
 class ReadDecomposeAsk(Approach):
     def __init__(self, search_client: SearchClient, openai_deployment: str, sourcepage_field: str, content_field: str):
@@ -42,7 +40,6 @@ class ReadDecomposeAsk(Approach):
             self.results = [doc[self.sourcepage_field] + ":" + nonewlines(" . ".join([c.text for c in doc['@search.captions'] ])) for doc in r]
         else:
             self.results = [doc[self.sourcepage_field] + ":" + nonewlines(doc[self.content_field][:500]) for doc in r]
-        print("RESULTS",self.results)
         return "\n".join(self.results)
 
     def lookup(self, q: str) -> Optional[str]:
@@ -62,19 +59,6 @@ class ReadDecomposeAsk(Approach):
         if r.get_count() > 0:
             return "\n".join(d['content'] for d in r)
         return None
-    
-    # Function that translates the actions from English to Norwegian 
-    def translate(self, q: str) -> Optional[str]:
-      return f"Translate {q} to query language " 
-
-
-    # Function to handle different error that is produced
-    def _handle_error(error) -> str:
-        # INSTRUCTION IF THESE MIGHT OCCUR 
-        INSTRUCTION = "If you struggle here try, to translate the actions to english "
-        if error: 
-            print("ERROR",error)  
-            return INSTRUCTION
 
     def run(self, q: str, overrides: dict[str, Any]) -> Any:
         # Not great to keep this as instance state, won't work with interleaving (e.g. if using async), but keeps the example simple
@@ -84,7 +68,7 @@ class ReadDecomposeAsk(Approach):
         cb_handler = HtmlCallbackHandler()
         cb_manager = CallbackManager(handlers=[cb_handler])
 
-        llm = AzureOpenAI(deployment_name=self.openai_deployment, temperature=overrides.get("temperature") or 0, openai_api_key=openai.api_key)
+        llm = AzureOpenAI(deployment_name=self.openai_deployment, temperature=overrides.get("temperature") or 0.3, openai_api_key=openai.api_key)
         tools = [
             Tool(name="Search", func=lambda q: self.search(q, overrides), description="useful for when you need to ask with search", callbacks=cb_manager),
             Tool(name="Lookup", func=self.lookup, description="useful for when you need to ask with lookup", callbacks=cb_manager)
@@ -94,11 +78,10 @@ class ReadDecomposeAsk(Approach):
         global prompt
         prompt_prefix = overrides.get("prompt_template")
         prompt = PromptTemplate.from_examples(
-            EXAMPLES, SUFFIX, ["input", "agent_scratchpad"], prompt_prefix + "\n\n" + PREFIX  if prompt_prefix else PREFIX)
+            EXAMPLES, SUFFIX, ["input", "agent_scratchpad"], prompt_prefix + "\n\n" + PREFIX if prompt_prefix else PREFIX)
 
         agent = ReAct.from_llm_and_tools(llm, tools)
         chain = AgentExecutor.from_agent_and_tools(agent, tools, verbose=True, callback_manager=cb_manager)
-        chain.handle_parsing_errors = "Complete the Thought and conform to the standards"
         result = chain.run(q)
 
         # Replace substrings of the form <file.ext> with [file.ext] so that the frontend can render them as links, match them with a regex to avoid 
@@ -111,7 +94,7 @@ class ReAct(ReActDocstoreAgent):
     @classmethod
     def create_prompt(cls, tools: List[Tool]) -> BasePromptTemplate:
         return prompt
-
+    
 # Modified version of langchain's ReAct prompt that includes instructions and examples for how to cite information sources
 EXAMPLES = [
     """Question: What is the elevation range for the area that the eastern sector of the
@@ -221,19 +204,7 @@ Action: Finish[yes <info4444.pdf><datapoints_aaa.txt>]""",
 ]
 SUFFIX = """\nQuestion: {input}
 {agent_scratchpad}"""
-PREFIX = \
-"Answer questions as shown in the following examples, by splitting the question into individual search or lookup actions to find facts until you can answer the question. " \
+PREFIX = "Answer questions as shown in the following examples, by splitting the question into individual search or lookup actions to find facts until you can answer the question. " \
 "Observations are prefixed by their source name in angled brackets, source names MUST be included with the actions in the answers." \
-"All questions must be answered from the results from search or look up actions, only facts resulting from those can be used in an answer. "\
-"Answer questions as truthfully as possible, and ONLY answer the questions using the information from observations, do not speculate or your own knowledge."\
-" If you cannot answer using the sources you have avalible, say that you don't know, and that the user should contact customer support. "
-# format_instructions = """
-# Use the following format:
-# Question: the input question you must answer.
-# Thought: you should always think about what to do to find the answer.
-# Action: the action to take to find the answer, should be one of these: Lookup and Search.
-# Action Input: the input to the action.
-# Observation: the result of the action.
-# ... (this Thought/Action/Action Input/Observation can repeat N times).
-# Thought: I now know the final answer.
-# Final Answer: Based on my observations, I now know the final answer to the original input question."""
+"All questions must be answered from the results from search or look up actions, only facts resulting from those can be used in an answer. "
+"Answer questions as truthfully as possible, and ONLY answer the questions using the information from observations, do not speculate or your own knowledge."

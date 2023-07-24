@@ -58,6 +58,7 @@ validate-infra:
     - az config set bicep.use_binary_from_path=false
     - az bicep install
     - source infra/platypus-dev.env
+    - echo $AZURE_DEPLOY_CLIENT_ID, $AZURE_DEPLOY_CLIENT_SECRET, $DNB_AZURE_TENANT_ID
     - az login --service-principal -u $AZURE_DEPLOY_CLIENT_ID -p $AZURE_DEPLOY_CLIENT_SECRET --tenant $DNB_AZURE_TENANT_ID
     - az deployment sub what-if --location West-Europe --template-file infra/main.bicep --parameters @infra/main.parameters.json
   rules:

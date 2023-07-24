@@ -64,3 +64,15 @@ validate-infra:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' || $CI_COMMIT_BRANCH == 'main' 
 
+deploy:
+  stage: CD
+  image: python:latest
+  script:
+    - apt update -y
+    - apt install nodejs -y 
+    - apt install npm -y
+    - curl -fsSL https://aka.ms/install-azd.sh | bash
+    - az login --service-principal -u $AZURE_DEPLOY_CLIENT_ID -p $AZURE_DEPLOY_CLIENT_SECRET --tenant $DNB_AZURE_TENANT_ID
+    - azd up
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'web' || $CI_COMMIT_BRANCH == 'main'

@@ -35,7 +35,7 @@
     "chatGptDeploymentName": {
       "value": "chat"
     },
-    "gptDeploymentName": {
+    "gptDeploymentName": {  
       "value": "gpt-35-turbo"
     }
   }

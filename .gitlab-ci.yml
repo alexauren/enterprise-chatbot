@@ -75,7 +75,7 @@ deploy:
     - azd auth login --client-id $AZURE_DEPLOY_CLIENT_ID --tenant-id $DNB_AZURE_TENANT_ID --client-secret $AZURE_DEPLOY_CLIENT_SECRET
     # - az login --service-principal -u $AZURE_DEPLOY_CLIENT_ID -p $AZURE_DEPLOY_CLIENT_SECRET --tenant $DNB_AZURE_TENANT_ID
     - source infra/platypus-dev.env
-    - azd env new cicd -l westeurope --subscription $DNB_AZURE_SUBSCRIPTION_ID
+    - azd env new cicd -l westeurope --subscription 564df8bf-50ab-4917-8082-b363158428c2
     - azd up -e cicd --no-prompt  
   rules:
     - if: $CI_PIPELINE_SOURCE == 'web' || $CI_COMMIT_BRANCH == 'main'

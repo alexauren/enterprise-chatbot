@@ -8,9 +8,6 @@
     "location": {
       "value": "westeurope"
     },
-    "principalId": {
-      "value": "28ffb7b0-7bee-4e01-8f46-fd5f9568d9c7"
-    },
     "openAiServiceName": {
       "value": "cog-platypus"
     },

@@ -12,25 +12,25 @@
       "value": "28ffb7b0-7bee-4e01-8f46-fd5f9568d9c7"
     },
     "openAiServiceName": {
-      "value": "cog-xxhi5srdy7fak"
+      "value": "cog-platypus"
     },
     "openAiSkuName": {
       "value": "S0"
     },
     "formRecognizerServiceName": {
-      "value": "cog-fr-xxhi5srdy7fak"
+      "value": "cog-fr-platypus"
     },
     "formRecognizerSkuName": {
       "value": "S0"
     },
     "searchServiceName": {
-      "value": "gptkb-xxhi5srdy7fak"
+      "value": "gptkb-platypus"
     },
     "searchServiceSkuName": {
       "value": "standard"
     },
     "storageAccountName": {
-      "value": "$stxxhi5srdy7fak"
+      "value": "stplatypus"
     },
     "chatGptDeploymentName": {
       "value": "chat"

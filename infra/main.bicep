@@ -14,14 +14,12 @@ param backendServiceName string = ''
 param resourceGroupName string = ''
 
 param searchServiceName string = ''
-param searchServiceResourceGroupName string = ''
 param searchServiceResourceGroupLocation string = location
 
 param searchServiceSkuName string = 'basic'
 param searchIndexName string = 'gptkbindex'
 
 param storageAccountName string = ''
-param storageResourceGroupName string = ''
 param storageResourceGroupLocation string = location
 param storageContainerName string = 'content'
 
@@ -31,7 +29,6 @@ param openAiResourceGroupLocation string = location
 param openAiSkuName string = 'S0'
 
 param formRecognizerServiceName string = ''
-param formRecognizerResourceGroupName string = ''
 param formRecognizerResourceGroupLocation string = location
 
 param formRecognizerSkuName string = 'S0'

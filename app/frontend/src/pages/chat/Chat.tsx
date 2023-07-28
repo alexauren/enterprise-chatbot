@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Checkbox, Panel, DefaultButton, TextField, SpinButton } from "@fluentui/react";
+import { Checkbox, Panel, DefaultButton, TextField, SpinButton, IChoiceGroupOption, ChoiceGroup } from "@fluentui/react";
 import { Logo } from "@dnb/eufemia";
 
 import styles from "./Chat.module.css";
@@ -15,7 +15,10 @@ import { ClearChatButton } from "../../components/ClearChatButton";
 
 const Chat = () => {
     const [isConfigPanelOpen, setIsConfigPanelOpen] = useState(false);
+    const [approach, setApproach] = useState<Approaches>(Approaches.RetrieveThenRead);
     const [promptTemplate, setPromptTemplate] = useState<string>("");
+    const [promptTemplatePrefix, setPromptTemplatePrefix] = useState<string>("");
+    const [promptTemplateSuffix, setPromptTemplateSuffix] = useState<string>("");
     const [retrieveCount, setRetrieveCount] = useState<number>(3);
     const [useSemanticRanker, setUseSemanticRanker] = useState<boolean>(true);
     const [useSemanticCaptions, setUseSemanticCaptions] = useState<boolean>(false);
@@ -46,7 +49,7 @@ const Chat = () => {
             const history: ChatTurn[] = answers.map(a => ({ user: a[0], bot: a[1].answer }));
             const request: ChatRequest = {
                 history: [...history, { user: question, bot: undefined }],
-                approach: Approaches.ReadRetrieveRead,
+                approach,
                 overrides: {
                     promptTemplate: promptTemplate.length === 0 ? undefined : promptTemplate,
                     excludeCategory: excludeCategory.length === 0 ? undefined : excludeCategory,
@@ -79,8 +82,20 @@ const Chat = () => {
         setPromptTemplate(newValue || "");
     };
 
+    const onPromptTemplatePrefixChange = (_ev?: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string) => {
+        setPromptTemplatePrefix(newValue || "");
+    };
+
+    const onPromptTemplateSuffixChange = (_ev?: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string) => {
+        setPromptTemplateSuffix(newValue || "");
+    };
+
     const onRetrieveCountChange = (_ev?: React.SyntheticEvent<HTMLElement, Event>, newValue?: string) => {
         setRetrieveCount(parseInt(newValue || "3"));
+    };
+
+    const onApproachChange = (_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, option?: IChoiceGroupOption) => {
+        setApproach((option?.key as Approaches) || Approaches.RetrieveThenRead);
     };
 
     const onUseSemanticRankerChange = (_ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => {
@@ -123,6 +138,17 @@ const Chat = () => {
 
         setSelectedAnswer(index);
     };
+
+    const approaches: IChoiceGroupOption[] = [
+        {
+            key: Approaches.RetrieveThenRead,
+            text: "Retrieve-Then-Read"
+        },
+        {
+            key: Approaches.ReadRetrieveRead,
+            text: "Read-Retrieve-Read"
+        },
+    ];
 
     return (
         <div className={styles.container}>
@@ -211,14 +237,45 @@ const Chat = () => {
                     onRenderFooterContent={() => <DefaultButton onClick={() => setIsConfigPanelOpen(false)}>Close</DefaultButton>}
                     isFooterAtBottom={true}
                 >
+                <ChoiceGroup
+                    className={styles.oneshotSettingsSeparator}
+                    label="Approach"
+                    options={approaches}
+                    defaultSelectedKey={approach}
+                    onChange={onApproachChange}
+                />
+
+                {(approach === Approaches.RetrieveThenRead || approach === Approaches.ReadDecomposeAsk) && (
                     <TextField
-                        className={styles.chatSettingsSeparator}
+                        className={styles.oneshotSettingsSeparator}
                         defaultValue={promptTemplate}
                         label="Override prompt template"
                         multiline
                         autoAdjustHeight
                         onChange={onPromptTemplateChange}
                     />
+                )}
+
+                {approach === Approaches.ReadRetrieveRead && (
+                    <>
+                        <TextField
+                            className={styles.oneshotSettingsSeparator}
+                            defaultValue={promptTemplatePrefix}
+                            label="Override prompt prefix template"
+                            multiline
+                            autoAdjustHeight
+                            onChange={onPromptTemplatePrefixChange}
+                        />
+                        <TextField
+                            className={styles.oneshotSettingsSeparator}
+                            defaultValue={promptTemplateSuffix}
+                            label="Override prompt suffix template"
+                            multiline
+                            autoAdjustHeight
+                            onChange={onPromptTemplateSuffixChange}
+                        />
+                    </>
+                )}
 
                     <SpinButton
                         className={styles.chatSettingsSeparator}

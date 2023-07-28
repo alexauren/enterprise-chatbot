@@ -8,7 +8,6 @@ from langchain.chains import LLMChain
 from langchain.agents import Tool, ZeroShotAgent, AgentExecutor
 from langchainadapters import HtmlCallbackHandler
 from text import nonewlines
-from lookuptool import CsvLookupTool
 from typing import Any
 
 class ReadRetrieveReadApproach(Approach):
@@ -24,24 +23,36 @@ class ReadRetrieveReadApproach(Approach):
     """
 
     template_prefix = \
-"You are an intelligent assistant helping DNB Bank AS customers with their questions about insurance." \
-"For tabular information return it as an html table. Do not return markdown format. " \
+"You are an intelligent assistant. Your name is Floyd.  Your job is helping DNB Bank ASA customers with their questions about insurance." \
+"For information in table format return it as an html table. Do not return markdown format. " \
 "Each source has a name followed by colon and the actual data, quote the source name for each piece of data you use in the response. " \
 "For example, if the question is \"What color is the sky?\" and one of the information sources says \"info123: the sky is blue whenever it's not cloudy\", then answer with \"The sky is blue [info123]\" " \
 "It's important to strictly follow the format where the name of the source is in square brackets at the end of the sentence, and only up to the prefix before the colon (\":\"). " \
 "If there are multiple sources, cite each one in their own square brackets. For example, use \"[info343][ref-76]\" and not \"[info343,ref-76]\". " \
 "Never quote tool names as sources." \
-"If you cannot answer using the sources below, say that you don't know, and that the user should contact customer support. " \
+"If you cannot answer the question using the sources below, stop the thought process, say that you don't know, and that the user should contact customer support. " \
 "\n\nYou can access to the following tools:"
-    
+# "If you need more information, ask the user for it. " \    
+
     template_suffix = """
 Begin!
 
 Question: {input}
+Thought: {agent_scratchpad}"""  
 
-Thought: {agent_scratchpad}"""    
+    format_instructions = """
+Use the following format:
 
-    CognitiveSearchToolDescription = "useful for searching the Microsoft employee benefits information such as healthcare plans, retirement plans, etc."
+Question: the input question you must answer.
+Thought: you should always think about what to do to find the answer. 
+Action: the action to take to find the answer, should be one of [{tool_names}].
+Action Input: the input to the action.
+Observation: the result of the action.
+... (this Thought/Action/Action Input/Observation can repeat N times).
+Thought: I now know the final answer.
+Final Answer: Based on my observations, I now know the final answer to the original input question."""
+
+    CognitiveSearchToolDescription = "Useful for searching for public information about DNB insurance car insurance, etc."
 
     def __init__(self, search_client: SearchClient, openai_deployment: str, sourcepage_field: str, content_field: str):
         self.search_client = search_client
@@ -73,7 +84,10 @@ Thought: {agent_scratchpad}"""
         content = "\n".join(self.results)
         return content
         
-    def run(self, q: str, overrides: dict[str, Any]) -> Any:
+    def run(self, q: str, overrides: dict[str, Any], ask_user: str) -> Any:
+        
+        if bool(ask_user):
+            return ask_user
         # Not great to keep this as instance state, won't work with interleaving (e.g. if using async), but keeps the example simple
         self.results = None
 
@@ -85,15 +99,16 @@ Thought: {agent_scratchpad}"""
                         func=lambda q: self.retrieve(q, overrides), 
                         description=self.CognitiveSearchToolDescription,
                         callbacks=cb_manager)
-        employee_tool = EmployeeInfoTool("Employee1", callbacks=cb_manager)
-        tools = [acs_tool, employee_tool]
+       
+        tools = [acs_tool]
 
         prompt = ZeroShotAgent.create_prompt(
             tools=tools,
             prefix=overrides.get("prompt_template_prefix") or self.template_prefix,
             suffix=overrides.get("prompt_template_suffix") or self.template_suffix,
             input_variables = ["input", "agent_scratchpad"])
-        llm = AzureOpenAI(deployment_name=self.openai_deployment, temperature=overrides.get("temperature") or 0.3, openai_api_key=openai.api_key)
+        print(prompt)
+        llm = AzureOpenAI(deployment_name=self.openai_deployment, temperature=overrides.get("temperature") or 0, openai_api_key=openai.api_key)
         chain = LLMChain(llm = llm, prompt = prompt)
         agent_exec = AgentExecutor.from_agent_and_tools(
             agent = ZeroShotAgent(llm_chain = chain, tools = tools),
@@ -103,21 +118,6 @@ Thought: {agent_scratchpad}"""
         result = agent_exec.run(q)
                 
         # Remove references to tool names that might be confused with a citation
-        result = result.replace("[CognitiveSearch]", "").replace("[Employee]", "")
+        result = result.replace("[CognitiveSearch]", "")
 
         return {"data_points": self.results or [], "answer": result, "thoughts": cb_handler.get_and_reset_log()}
-
-class EmployeeInfoTool(CsvLookupTool):
-    employee_name: str = ""
-
-    def __init__(self, employee_name: str, callbacks: Callbacks = None):
-        super().__init__(filename="data/employeeinfo.csv", 
-                         key_field="name", 
-                         name="Employee", 
-                         description="useful for answering questions about the employee, their benefits and other personal information",
-                         callbacks=callbacks)
-        self.func = self.employee_info
-        self.employee_name = employee_name
-
-    def employee_info(self, name: str) -> str:
-        return self.lookup(name)

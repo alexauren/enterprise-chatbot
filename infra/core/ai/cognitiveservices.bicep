@@ -10,7 +10,8 @@ param sku object = {
   name: 'S0'  
 }
 
-resource account 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
+#disable-next-line BCP081
+resource account 'Microsoft.CognitiveServices/accounts@2023-06-01-preview' = {
   name: name
   location: location
   tags: tags
@@ -23,7 +24,8 @@ resource account 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
 }
 
 @batchSize(1)
-resource deployment 'Microsoft.CognitiveServices/accounts/deployments@2023-05-01' = [for deployment in deployments: {
+#disable-next-line BCP081
+resource deployment 'Microsoft.CognitiveServices/accounts/deployments@2023-06-01-preview' = [for deployment in deployments: {
   parent: account
   name: deployment.name
   properties: {

@@ -45,24 +45,39 @@ History:
 """
     few_shot_examples = [
     {
-        "role": USER, 'content': "Does DNB offer house insurance?",
-        "role": ASSISTANT, 'content': "DNB does offer house insurance [Source Name 1] ",
+        "role": USER, 'content': "Does DNB offer house insurance?"
+    },    
+    {
+        "role": ASSISTANT, 'content': "DNB does offer house insurance [Source Name 1] "
     },
     {
-        "role": USER, 'content': "What is Toppkasko",
+        "role": USER, 'content': "What is Toppkasko" 
+    },
+    {
         "role": ASSISTANT, 'content': "Im sorry, i have no sources about that, please ask about something related to house insurance",
     },
+
     {
         "role": USER, 'content': "Does house insurance also cover fungus and rot?",
-        "role": ASSISTANT, 'content': "House insurance from DNB can also cover fungus and rot as additional add ons, go to the insurance website to find more information about what add ons are availabel and their price [Source Name 2] [Source Name 5]",
+        
     },
     {
+        "role": ASSISTANT, 'content': "House insurance from DNB can also cover fungus and rot as additional add ons, go to the insurance website to find more information about what add ons are availabel and their price [Source Name 2] [Source Name 5]",
+    },
+
+    {
         "role": USER, 'content': "What is the best insurance for me?",
+
+    },    
+    {
         "role": ASSISTANT, 'content': "There are several factors that are of relevance when finding a suitable insurance, talking with a DNB employee can help you with finding out what fits for you, or checking out the website [Source Name 2]",
     } ,
     {
         "role": USER, 'content': "What is the difference between a cat and a dog",
-        "role": ASSISTANT, 'content': "Im sorry, i have no sources about that, please ask about something related to house insurance",
+       
+    },
+    {
+         "role": ASSISTANT, 'content': "Im sorry, i have no sources about that, please ask about something related to house insurance",
     }
 
     ]

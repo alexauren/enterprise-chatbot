@@ -91,7 +91,12 @@ History:
 
         step_time = time.time()
         search_result = self.retrieve_documents(search_query, top, filter, use_semantic_captions, overrides)
+        if search_result == "": 
+            no_source = "No source"
+            search_result = no_source
+
         sources = "\n".join(search_result)
+        
 
         print(f"Finished step 2 in {time.time() - step_time} seconds")
         print("Beginning step 3: Generate question answer")
@@ -119,6 +124,13 @@ History:
         except concurrent.futures.TimeoutError:
             return None
 
+    def remove_source(self,r:dict):
+        for doc in r: 
+            if doc["@search.score"] >= 1: 
+                print("DOC REMOVED:",doc[self.sourcepage_field])
+            else: 
+                print("DOC:",doc[self.sourcepage_field])
+
     def retrieve_documents(self, query, top, filter, use_semantic_captions, overrides):
         if overrides.get("semantic_ranker"):
             r = self.search_client.search(query, 
@@ -129,15 +141,18 @@ History:
                                           semantic_configuration_name="default", 
                                           top=top,
                                           query_caption="extractive|highlight-false" if use_semantic_captions else None)
+        
         else:
             r = self.search_client.search(query, filter=filter, top=top)
-
         if use_semantic_captions:
-            results = [doc[self.sourcepage_field] + ": " + nonewlines(" . ".join([c.text for c in doc['@search.captions']])) for doc in r]
+            results = [doc[self.sourcepage_field] + ": " + nonewlines(" . ".join([c.text for c in doc['@search.captions']])) for doc in r if doc["@search.score"] >= 1]
         else:
-            results = [doc[self.sourcepage_field] + ": " + nonewlines(doc[self.content_field]) for doc in r]
-
-        return results
+            results = [doc[self.sourcepage_field] + ": " + nonewlines(doc[self.content_field]) for doc in r if doc["@search.score"] >= 1]
+        self.remove_source(r)
+        
+        if len(results): 
+            return results
+        return ""
 
     def format_assistant_prompt(self, sources, overrides):
         follow_up_questions_prompt = self.follow_up_questions_prompt_content if overrides.get("suggest_followup_questions") else ""
@@ -195,7 +210,6 @@ History:
 
         messages.append({"role": self.USER, "content": user_question})
 
-        print(messages)
 
         return messages
 

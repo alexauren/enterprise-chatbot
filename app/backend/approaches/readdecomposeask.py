@@ -18,7 +18,7 @@ class ReadDecomposeAsk(Approach):
         self.openai_deployment = openai_deployment
         self.sourcepage_field = sourcepage_field
         self.content_field = content_field
-
+            
     def search(self, q: str, overrides: dict[str, Any]) -> str:
         use_semantic_captions = True if overrides.get("semantic_captions") else False
         top = overrides.get("top") or 3
@@ -33,16 +33,31 @@ class ReadDecomposeAsk(Approach):
                                           query_speller="lexicon", 
                                           semantic_configuration_name="default", 
                                           top = top,
-                                          query_caption="extractive|highlight-false" if use_semantic_captions else None)
+                                          query_caption="extractive|highlight-false" if use_semantic_captions else None) 
+            for dc in r: 
+                if dc["@search.score"] >= 1:
+                    print("score",dc["@search.score"])
+
+
         else:
             r = self.search_client.search(q, filter=filter, top=top)
-        if use_semantic_captions:
-            self.results = [doc[self.sourcepage_field] + ":" + nonewlines(" . ".join([c.text for c in doc['@search.captions'] ])) for doc in r]
-        else:
-            self.results = [doc[self.sourcepage_field] + ":" + nonewlines(doc[self.content_field][:500]) for doc in r]
-        return "\n".join(self.results)
+            print("here")
+            for dc in r: 
+                if dc["@search.score"] >= 1:
+                    print("score",dc["@search.score"])
 
+         
+        if use_semantic_captions:
+            self.results = [doc[self.sourcepage_field] + ":" + nonewlines(" . ".join([c.text for c in doc['@search.captions']])) for doc in r]
+        else:
+            self.results = [doc[self.sourcepage_field] + ":" + nonewlines(doc[self.content_field]) for doc in r]
+
+        if len(self.results) > 0:
+            return "\n".join(self.results)
+        return None
+    
     def lookup(self, q: str) -> Optional[str]:
+        self.search_client.suggest()
         r = self.search_client.search(q,
                                       top = 1,
                                       include_total_count=True,
@@ -206,5 +221,5 @@ SUFFIX = """\nQuestion: {input}
 {agent_scratchpad}"""
 PREFIX = "Answer questions as shown in the following examples, by splitting the question into individual search or lookup actions to find facts until you can answer the question. " \
 "Observations are prefixed by their source name in angled brackets, source names MUST be included with the actions in the answers." \
-"All questions must be answered from the results from search or look up actions, only facts resulting from those can be used in an answer. "
+"All questions must be answered from the results from search or look up actions, only facts resulting from those can be used in an answer. " \
 "Answer questions as truthfully as possible, and ONLY answer the questions using the information from observations, do not speculate or your own knowledge."

@@ -2,13 +2,15 @@ import time
 import re
 import concurrent.futures
 from typing import Any, Sequence
-
 import openai
 import openai.error
 from azure.search.documents import SearchClient
 from azure.search.documents.models import QueryType
 from approaches.approach import Approach
 from text import nonewlines
+from azure.ai.translation.text import TextTranslationClient, TranslatorCredential
+from azure.ai.translation.text.models import InputTextItem
+from azure.core.exceptions import HttpResponseError
 
 class ChatRetrieveThenReadApproach(Approach):
     """
@@ -21,7 +23,7 @@ class ChatRetrieveThenReadApproach(Approach):
     USER = "user"
     ASSISTANT = "assistant"
 
-    DOCUMENT_SCORE_CUTOFF = 1.0
+    DOCUMENT_SCORE_CUTOFF = 0.5
 
     CHATGPT_TIMEOUT = 600
     CHATGPT_RETRY_WAIT = 1
@@ -55,8 +57,16 @@ Generate a search query based on the conversation and the new question.
 Do not include cited source filenames and document names e.g info.txt or doc.pdf in the search query terms.
 Do not include any text inside [] or <<>> in the search query terms.
 Do not include any special characters like '+'.
-Translate the question to English before generating the search query if necessarry.
----
+It is important that the search query is in english such that cognitive search can search efficient you can use the example below:
+"Query: Hva er husforsikring?
+Search query: What is house insurance?
+Query: ¿Cuánto cuesta el seguro de automóvil? "
+Search query: What does car insurance cost?
+Query: Was ist der Unterschied zwischen Hausratversicherung und Hausratversicherung?
+Search query: What is the difference between contents insurance and home insurance
+
+ 
+
 History:
 {history}
 """
@@ -118,6 +128,34 @@ History:
         self.sourcepage_field = sourcepage_field
         self.content_field = content_field
         self.executor = concurrent.futures.ThreadPoolExecutor()
+        # Translate cliente 
+        # set `<your-key>`, `<your-endpoint>`, and  `<region>` variables with the values from the Azure portal
+        key = "511b17623f764091a3cea6d47747548f"
+        endpoint = "https://api.cognitive.microsofttranslator.com/"
+        region = "westeurope"
+        try: 
+            credential = TranslatorCredential(key, region)
+            self.text_translator = TextTranslationClient(endpoint=endpoint, credential=credential)
+        except HttpResponseError as exception:
+            print(f"Error Code: {exception.error.code}")
+            print(f"Message: {exception.error.message}")
+
+    def identify_language(self,q:str)->str:
+       self.text_translator.get_languages()
+       return ""
+    
+    def translate_language(self,q:str,source_language:str,target_language:str)->str:
+        translated_query = ""
+        print(f"QUERY: {q}")
+        input_text_elements = [ InputTextItem(text = q) ]
+        response = self.text_translator.translate(content = input_text_elements, to = [target_language], from_parameter = source_language)
+        print(f"THE RESPONSE {response}")
+        translation = response[0] if response else None
+        if not translation:
+            return None
+        translated_query = translation['translations'][0]['text']
+        print(f"translated query: {translated_query}")
+        return translated_query
 
     def run(self, history: Sequence[dict[str, str]], overrides: dict[str, Any]) -> Any:
         start_time = time.time()
@@ -136,13 +174,12 @@ History:
         
         step_time = time.time()
         search_query = self.generate_keyword_query(filtered_history, overrides, self.CHATGPT_TIMEOUT)
-
         print(f"Finished step 1 in {time.time() - step_time} seconds")
 
         if search_query == None:
             return {"data_points": "", "answer": "Could not generate query, please try again.", "thoughts": ""}
 
-        print(f"Search query: {search_query}")
+        print(f" Original search query: {search_query}")
       
         print("Beginning step 2: Retrieve documents from search index")
 
@@ -160,6 +197,7 @@ History:
         if answer == None:
             print("WARNING: Timeout before generating question answer")
             answer = "Could not answer question, please try again."
+            
 
         print("Generated answer: ", answer)
 

@@ -23,7 +23,7 @@ class ChatRetrieveThenReadApproach(Approach):
     USER = "user"
     ASSISTANT = "assistant"
 
-    DOCUMENT_SCORE_CUTOFF = 0.5
+    DOCUMENT_SCORE_CUTOFF = 1.0
 
     CHATGPT_TIMEOUT = 600
     CHATGPT_RETRY_WAIT = 1
@@ -128,35 +128,7 @@ History:
         self.sourcepage_field = sourcepage_field
         self.content_field = content_field
         self.executor = concurrent.futures.ThreadPoolExecutor()
-        # Translate cliente 
-        # set `<your-key>`, `<your-endpoint>`, and  `<region>` variables with the values from the Azure portal
-        key = "511b17623f764091a3cea6d47747548f"
-        endpoint = "https://api.cognitive.microsofttranslator.com/"
-        region = "westeurope"
-        try: 
-            credential = TranslatorCredential(key, region)
-            self.text_translator = TextTranslationClient(endpoint=endpoint, credential=credential)
-        except HttpResponseError as exception:
-            print(f"Error Code: {exception.error.code}")
-            print(f"Message: {exception.error.message}")
-
-    def identify_language(self,q:str)->str:
-       self.text_translator.get_languages()
-       return ""
     
-    def translate_language(self,q:str,source_language:str,target_language:str)->str:
-        translated_query = ""
-        print(f"QUERY: {q}")
-        input_text_elements = [ InputTextItem(text = q) ]
-        response = self.text_translator.translate(content = input_text_elements, to = [target_language], from_parameter = source_language)
-        print(f"THE RESPONSE {response}")
-        translation = response[0] if response else None
-        if not translation:
-            return None
-        translated_query = translation['translations'][0]['text']
-        print(f"translated query: {translated_query}")
-        return translated_query
-
     def run(self, history: Sequence[dict[str, str]], overrides: dict[str, Any]) -> Any:
         start_time = time.time()
 

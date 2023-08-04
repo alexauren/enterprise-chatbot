@@ -8,9 +8,6 @@ from azure.search.documents import SearchClient
 from azure.search.documents.models import QueryType
 from approaches.approach import Approach
 from text import nonewlines
-from azure.ai.translation.text import TextTranslationClient, TranslatorCredential
-from azure.ai.translation.text.models import InputTextItem
-from azure.core.exceptions import HttpResponseError
 
 class ChatRetrieveThenReadApproach(Approach):
     """

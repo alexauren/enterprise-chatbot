@@ -45,6 +45,8 @@ args = parser.parse_args()
 # TODO: Read from arguments
 urls = ["www.dnb.no/forsikring/bilforsikring", "www.dnb.no/forsikring", "www.dnb.no/forsikring/husforsikring", "www.dnb.no/forsikring/innboforsikring", "www.dnb.no/forsikring/reiseforsikring", "www.dnb.no/forsikring/personforsikring", "www.dnb.no/forsikring/meld-skade", "www.dnb.no/forsikring/rabatt", "www.dnb.no/forsikring/best-i-test-forsikring", "www.dnb.no/forsikring/fremtind", "www.dnb.no/forsikring/verdisakforsikring", "www.dnb.no/forsikring/verdisakforsikring/sykkelforsikring", "www.dnb.no/forsikring/kjoretoy/sma-elektriske-kjoretoy", "www.dnb.no/forsikring/verdisakforsikring/bunadsforsikring", "www.dnb.no/forsikring/kjoretoy", "www.dnb.no/forsikring/kjoretoy/batforsikring", "www.dnb.no/forsikring/kjoretoy/motorsykkelforsikring", "www.dnb.no/forsikring/kjoretoy/bobilforsikring", "www.dnb.no/forsikring/kjoretoy/campingvognforsikring", "www.dnb.no/forsikring/kjoretoy/mopedforsikring", "www.dnb.no/forsikring/kjoretoy/snoscooterforsikring", "www.dnb.no/forsikring/kjoretoy/tilhengerforsikring", "dokument.fremtind.no/vilkar/fremtind/pm/mobilitet/Vilkar_ansvar_bil.pdf", "dokument.fremtind.no/vilkar/fremtind/pm/mobilitet/Vilkar_Minikasko_Bil.pdf", "dokument.fremtind.no/vilkar/fremtind/pm/mobilitet/Vilkar_Kasko_Bil.pdf", "dokument.fremtind.no/vilkar/fremtind/pm/mobilitet/Vilkar_Toppkasko_Bil.pdf", "dokument.fremtind.no/ipid/IPID_BIL.pdf"]
 
+file_sources = [("Car insurance.pdf", "car insurance"), ("HouseInsuranceTest.pdf", "house insurance"),  ("contentinsurance.pdf",  "content insurance")]
+
 # Use the current user identity to connect to Azure services unless a key is explicitly set for any of them
 azd_credential = AzureDeveloperCliCredential() if args.tenantid == None else AzureDeveloperCliCredential(tenant_id=args.tenantid, process_timeout=60)
 default_creds = azd_credential if args.searchkey == None or args.storagekey == None else None
@@ -293,11 +295,11 @@ def split_text(page_map):
     if start + SECTION_OVERLAP < end:
         yield (all_text[start:end], find_page(start))
 
-def create_sections_for_file(filename, page_map):
+def create_sections_for_file(filename, page_map, description):
     for i, (section, pagenum) in enumerate(split_text(page_map)):
         yield {
             "id": re.sub("[^0-9a-zA-Z_-]","_",f"{filename}-{i}"),
-            "content": section,
+            "content": f"This sections is about {description}. {section}",
             "category": args.category,
             "sourcepage": blob_name_from_file_page(filename, pagenum),
             "sourcefile": filename,
@@ -385,8 +387,26 @@ else:
     if not args.remove:
         create_search_index()
     
+
+    # for filename in glob.glob(args.files):
+    #     if args.verbose: print(f"Processing '{filename}'")
+    #     if args.remove:
+    #         remove_blobs(filename)
+    #         remove_from_index(filename)
+    #     elif args.removeall:
+    #         remove_blobs(None)
+    #         remove_from_index(None)
+    #     else:
+    #         if not args.skipblobs:
+    #             upload_blobs(filename)
+    #         page_map = get_document_text_from_file(filename)
+    #         sections = create_sections_for_file(os.path.basename(filename), page_map)
+    #         index_sections(os.path.basename(filename), sections)
+
     print(f"Processing files...")
-    for filename in glob.glob(args.files):
+    for source in file_sources:
+        filename = source[0]
+        description = source[1]
         if args.verbose: print(f"Processing '{filename}'")
         if args.remove:
             remove_blobs(filename)
@@ -398,7 +418,7 @@ else:
             if not args.skipblobs:
                 upload_blobs(filename)
             page_map = get_document_text_from_file(filename)
-            sections = create_sections_for_file(os.path.basename(filename), page_map)
+            sections = create_sections_for_file(os.path.basename(filename), page_map, description)
             index_sections(os.path.basename(filename), sections)
 
     # print("Processing urls...")
